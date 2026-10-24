@@ -4,25 +4,25 @@ React 19 application built with Vite. The interface talks to the separately depl
 
 ## Local development
 
-Requires Node.js 22.12 or later. With the backend running on port 4000, install dependencies and start Vite:
+Requires Node.js 22.12 or later. With the backend running on port 8000 (as set in its `.env.example`), install dependencies and start Vite:
 
 ```sh
 npm install
 npm run dev
 ```
 
-By default the frontend calls `/api`, which Vite proxies to `http://127.0.0.1:4000`. To call a different API locally, copy `.env.example` to `.env.local` and set `VITE_API_URL` to the API base URL ending in `/api`.
+By default the frontend calls `/api`, which Vite proxies to `http://127.0.0.1:8000`. Leave `VITE_API_URL` empty to use this local proxy. To call a different API locally, set `VITE_API_URL` to the backend origin or API base URL; the client adds `/api` exactly once.
 
 ## Vercel deployment
 
-Import the `hcm-lite-frontend` GitHub repository as a new Vercel project named `hcm-lite-web`. Use the repository root, the Vite preset, `npm run build` as the build command, and `dist` as the output directory. The included `vercel.json` provides SPA history-route fallback.
+The existing frontend is `https://hcm-client-seven.vercel.app`, connected to `MuzamilKhan197/hcm-client`. Use the repository root, the Vite preset, `npm run build` as the build command, and `dist` as the output directory.
 
-Set this environment variable for the Vercel Production environment before building:
+The production client always uses the same-origin `/api` URL. `vercel.json` forwards it to `https://hcm-api.vercel.app/api/:path*` **before** the SPA history-route fallback. This keeps sign-in cookies on the frontend origin. A stale `VITE_API_URL` value in Vercel cannot override this production proxy; that variable is only used during development.
 
-| Name | Value |
-| --- | --- |
-| `VITE_API_URL` | `https://<backend-domain>/api` |
+No frontend environment variable is required for production. The backend must have `CLIENT_URL=https://hcm-client-seven.vercel.app`. Keep `MONGODB_URI`, `JWT_SECRET`, and any AI key exclusively in the backend project.
 
-`VITE_API_URL` is public configuration, not a secret. Never add database credentials or `JWT_SECRET` to the frontend project. Configure the backend's `CLIENT_URL` to the exact frontend HTTPS origin. Use frontend and API domains under the same registrable domain so browsers send the `SameSite=Strict` session cookie.
+Push the updated frontend and redeploy the **latest commit**. The previously deployed bundle used `https://hcm-api.vercel.app/` directly, so it requested `/auth/status` without the canonical `/api` prefix. A source change does not update that old bundle until it is rebuilt and deployed.
+
+Verify `https://hcm-client-seven.vercel.app/api/auth/status` returns JSON (not `index.html`). If it returns 500/503, check the backend health endpoint and runtime logs. If the backend domain changes, update the proxy destination in `vercel.json` and redeploy the frontend. Preview deployments need a matching trusted backend origin and an intentionally selected database; the production backend does not accept arbitrary preview origins.
 
 After deployment, open the frontend, create the company and first administrator, and verify sign-in, sign-out, and a role-restricted page. The Vite production build can be checked locally with `npm run build`.

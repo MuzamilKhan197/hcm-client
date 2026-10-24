@@ -1,15 +1,16 @@
 import axios from 'axios';
-const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, '');
-const apiBaseUrl = configuredApiUrl
-  ? configuredApiUrl.endsWith('/api') ? configuredApiUrl : `${configuredApiUrl}/api`
-  : '/api';
+import { resolveApiBaseUrl, describeApiError } from './api-config';
+const apiBaseUrl = resolveApiBaseUrl({
+  production: import.meta.env.PROD,
+  configuredUrl: import.meta.env.VITE_API_URL,
+});
 
 export const api = axios.create({
   baseURL: apiBaseUrl,
   withCredentials: true,
   timeout: 20000,
 });
-export const errorMessage = error => error.response?.data?.message || (error.code === 'ECONNABORTED' ? 'The server took too long. Please try again.' : 'Cannot connect to the server. Check that the backend is running.');
+export const errorMessage = describeApiError;
 export function exportCsv(filename, rows) {
   if (!rows.length) return;
   const keys = Object.keys(rows[0]);
