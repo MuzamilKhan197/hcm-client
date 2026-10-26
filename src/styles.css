@@ -6,15 +6,23 @@
   background: #f7f8f5;
   font-synthesis: none;
   font-weight: 400;
+
   --green: #216452;
   --green-dark: #174f40;
   --muted: #859087;
   --line: #e8ece6;
   --white: #fff;
+
+  /* Existing colors */
   --sage: #e9f2ec;
   --lavender: #f0ecf8;
   --peach: #faf0e2;
-  --blue: #eaf1f7
+  --blue: #eaf1f7;
+
+  /* Department avatar colors */
+  --rose: #fee2e2;
+  --sky: #dbeafe;
+  --amber: #fef3c7;
 }
 
 * {
@@ -157,6 +165,31 @@ svg {
 .blue {
   background: var(--blue);
   color: #577289
+}
+
+.rose {
+  background: var(--rose);
+  color: #dc2626;
+}
+
+.lavender {
+  background: var(--lavender);
+  color: #7c3aed;
+}
+
+.sage {
+  background: var(--sage);
+  color: #4a7964;
+}
+
+.sky {
+  background: var(--sky);
+  color: #2563eb;
+}
+
+.amber {
+  background: var(--amber);
+  color: #b45309;
 }
 
 .button {
